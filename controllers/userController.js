@@ -63,6 +63,13 @@ exports.me = catchAsync(async (req, res) => {
     user: user,
   });
 });
+exports.getAll = catchAsync(async (req, res) => {
+  const users = await User.find({}).select("-password");
+  res.json({
+    success: true,
+    users,
+  });
+});
 
 exports.getUserById = catchAsync(async (req, res) => {
   const user = await User.findById(req.params.userId);
