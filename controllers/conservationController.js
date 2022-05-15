@@ -1,15 +1,21 @@
 const catchAsync = require("../middlewares/async");
 const Conversation = require("../Models/Conversation");
 const mongoose = require("mongoose");
+const apiError = require("../utility/apiError");
 
 exports.createConservation = catchAsync(async (req, res) => {
+  const findFirst = await Conversation.find({
+    members: [...req.body].sort(),
+  });
+  if (findFirst.length) {
+    throw new apiError(500, "Duplicate conversation");
+  }
   const newConversation = await Conversation.create({
-    members: [...req.body],
+    members: [...req.body].sort(),
   });
   const conversation = await Conversation.findById(
     newConversation._id
   ).populate("members", "-password");
-
   res.status(200).json(conversation);
 });
 
