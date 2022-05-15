@@ -3,11 +3,14 @@ const Conversation = require("../Models/Conversation");
 const mongoose = require("mongoose");
 
 exports.createConservation = catchAsync(async (req, res) => {
-  const newConversation = new Conversation({
-    members: [req.body.senderId, req.body.receiverId],
+  const newConversation = await Conversation.create({
+    members: [...req.body],
   });
-  const savedConversation = await newConversation.save();
-  res.status(200).json(savedConversation);
+  const conversation = await Conversation.findById(
+    newConversation._id
+  ).populate("members", "-password");
+
+  res.status(200).json(conversation);
 });
 
 exports.getConservationOfUser = catchAsync(async (req, res) => {
